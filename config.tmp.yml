@@ -1,0 +1,22 @@
+server:
+  http:
+    host: localhost
+    port: 10080
+  apiKey: 'key'
+
+logger:
+  console: true
+  format_json: false
+  level: debug
+
+database:
+  mysql:
+    db_name: jsin
+    db_host: mysql
+    db_port: 3306
+    username: root
+    password: password
+    conn_count: 27
+    conn_idle_time_sec: 7
+    conn_life_time_sec: 2000
+    options: parseTime=true
