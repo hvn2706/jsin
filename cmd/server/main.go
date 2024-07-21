@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/urfave/cli"
 	"jsin/config"
+	"jsin/database"
 	"jsin/logger"
 	"jsin/server"
 	"log"
@@ -19,7 +20,13 @@ func main() {
 		log.Fatalf("===== Init logger failed: %+v", err.Error())
 	}
 
-	// 3. Init server
+	// 3. Init db
+	err = database.GetDBInstance().Open(config.GlobalCfg.Database.MySQLConfig)
+	if err != nil {
+		logger.Fatalf("===== Open db failed: %+v", err.Error())
+	}
+
+	// 4. Init server
 	app := &cli.App{
 		Name:  "jsin",
 		Usage: "jsin provides you heaven",

@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"github.com/go-chi/render"
-	error2 "jsin/cmd/server/error"
 	"jsin/config"
+	error2 "jsin/pkg/common/error"
 	"jsin/pkg/constants"
 	"net/http"
 )
