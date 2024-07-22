@@ -54,9 +54,28 @@ type MySQLConfig struct {
 
 // Config for app configuration
 type Config struct {
-	Server   ServerConfig        `mapstructure:"server"`
-	Logger   logger.LoggerConfig `mapstructure:"logger"`
-	Database Database            `mapstructure:"database"`
+	Server          ServerConfig        `mapstructure:"server"`
+	Logger          logger.LoggerConfig `mapstructure:"logger"`
+	Database        Database            `mapstructure:"database"`
+	ExternalService External            `mapstructure:"external"`
+}
+
+type External struct {
+	S3 S3Config `mapstructure:"s3"`
+}
+
+type S3Config struct {
+	Cloudflare S3CloudflareConfig `mapstructure:"cloudflare"`
+}
+
+type S3CloudflareConfig struct {
+	Bucket               string `mapstructure:"bucket"`
+	Uri                  string `mapstructure:"uri"`
+	AccountId            string `mapstructure:"account_id"`
+	Token                string `mapstructure:"token"`
+	AccessKeyID          string `mapstructure:"access_key_id"`
+	SecretAccessKey      string `mapstructure:"secret_access_key"`
+	JurisdictionSpecific string `mapstructure:"jurisdiction_specific"`
 }
 
 // ===== Util func =====
