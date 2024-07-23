@@ -2,7 +2,7 @@ package telegram
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"jsin/bot/handler"
+	"jsin/bot/message_handler"
 	"jsin/config"
 	"jsin/logger"
 )
@@ -13,11 +13,11 @@ type ITelegramBot interface {
 
 type Bot struct {
 	cfg        config.TelegramBot
-	botHandler handler.IBotHandler
+	botHandler message_handler.IMessageHandler
 }
 
 func NewTelegramBot(cfg config.TelegramBot) ITelegramBot {
-	botHandler := handler.NewBotHandler()
+	botHandler := message_handler.NewMessageHandler()
 	return &Bot{
 		cfg:        cfg,
 		botHandler: botHandler,
