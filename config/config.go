@@ -58,6 +58,14 @@ type Config struct {
 	Logger          logger.LoggerConfig `mapstructure:"logger"`
 	Database        Database            `mapstructure:"database"`
 	ExternalService External            `mapstructure:"external"`
+	TelegramBot     TelegramBot         `mapstructure:"telegram_bot"`
+}
+
+type TelegramBot struct {
+	Token   string `mapstructure:"token"`
+	Debug   bool   `mapstructure:"debug"`
+	Offset  int    `mapstructure:"offset"`
+	Timeout int    `mapstructure:"timeout"`
 }
 
 type External struct {
@@ -90,7 +98,7 @@ func (s ServerListen) ListenString() string {
 }
 
 func Load() {
-	os.Chdir("../..")
+	os.Chdir("../")
 
 	if !common.CheckIfFileExist(actualConfigFileName) {
 		err := os.Rename(tmpConfigFileName, actualConfigFileName)
