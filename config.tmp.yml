@@ -30,3 +30,9 @@ s3:
     access_key_id: access_key_id
     secret_access_key: secret_access_key
     jurisdiction_specific: something
+
+telegram_bot:
+  token: bot_token
+  debug: false
+  offset: 0
+  timeout: 60
