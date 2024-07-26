@@ -98,8 +98,6 @@ func (s ServerListen) ListenString() string {
 }
 
 func Load() {
-	os.Chdir("../")
-
 	if !common.CheckIfFileExist(actualConfigFileName) {
 		err := os.Rename(tmpConfigFileName, actualConfigFileName)
 		if err != nil {

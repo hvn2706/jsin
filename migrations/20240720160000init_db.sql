@@ -1,6 +1,8 @@
 create table image (
     id integer not null auto_increment,
     image_url text,
+    file_name text,
+    source varchar(128),
     nsfw boolean not null default false,
     image_type_id integer,
     created_at timestamp not null default current_timestamp,

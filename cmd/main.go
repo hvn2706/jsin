@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"github.com/urfave/cli"
 	"jsin/bot/telegram"
+	"jsin/cmd/job"
 	"jsin/config"
 	"jsin/database"
 	"jsin/logger"
@@ -41,12 +43,25 @@ func main() {
 			{
 				Name:  "jsin-telegram",
 				Usage: "jsin provides you heaven telegram bot",
-				Action: func(ctx *cli.Context) {
-					bot := telegram.NewTelegramBot(config.GlobalCfg.TelegramBot)
+				Action: func(ctx *cli.Context) error {
+					bot := telegram.NewTelegramBot(config.GlobalCfg)
 					err = bot.Serve()
 					if err != nil {
-						logger.Fatalf("===== Run telegram bot failed: %+v", err.Error())
+						logger.Errorf("===== Run telegram bot failed: %+v", err.Error())
+						return err
 					}
+					return nil
+				},
+			},
+			{
+				Name:  "jsin-migration",
+				Usage: "migrate object to s3 and save url to db",
+				Action: func(ctx *cli.Context) error {
+					err = job.StartMigrationObjectJob(context.Background())
+					if err != nil {
+						return err
+					}
+					return nil
 				},
 			},
 		},

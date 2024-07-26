@@ -1,8 +1,10 @@
 package s3
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	s3config "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -11,10 +13,11 @@ import (
 	"jsin/config"
 	"jsin/logger"
 	"net/url"
-	"os"
 )
 
 type IClient interface {
+	UploadObject(ctx context.Context, body io.Reader, objectKey string) error
+	GetImage(ctx context.Context, objectKey string) ([]byte, error)
 }
 
 type ClientImpl struct {
@@ -31,7 +34,7 @@ type resolverV2 struct {
 func (r *resolverV2) ResolveEndpoint(_ context.Context, _ s3.EndpointParameters) (
 	smithyendpoints.Endpoint, error,
 ) {
-	u, err := url.Parse(fmt.Sprintf("https://%s.%s/%s", r.uri, r.accountID, r.bucket))
+	u, err := url.Parse(fmt.Sprintf("https://%s.%s/%s", r.accountID, r.uri, r.bucket))
 	if err != nil {
 		return smithyendpoints.Endpoint{}, err
 	}
@@ -54,7 +57,11 @@ func NewClient(cfg config.S3Config) *ClientImpl {
 	}
 
 	client := s3.NewFromConfig(configS3, func(options *s3.Options) {
-		options.EndpointResolverV2 = &resolverV2{}
+		options.EndpointResolverV2 = &resolverV2{
+			uri:       cfg.Cloudflare.Uri,
+			accountID: cfg.Cloudflare.AccountId,
+			bucket:    cfg.Cloudflare.Bucket,
+		}
 	})
 	return &ClientImpl{
 		s3Client: client,
@@ -62,28 +69,36 @@ func NewClient(cfg config.S3Config) *ClientImpl {
 	}
 }
 
-func (c *ClientImpl) GetImage(ctx context.Context) (string, error) {
+func (c *ClientImpl) UploadObject(ctx context.Context, body io.Reader, objectKey string) error {
+	response, err := c.s3Client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket:      &c.cfg.Cloudflare.Bucket,
+		Key:         &objectKey,
+		Body:        body,
+		ContentType: aws.String("image/jpeg"),
+	})
+	if err != nil {
+		logger.Errorf("===== Upload image to s3 failed: %+v", err.Error())
+		return err
+	}
+	logger.Infof("===== Upload image to s3 success: %+v", response)
+	return nil
+}
+
+func (c *ClientImpl) GetImage(ctx context.Context, objectKey string) ([]byte, error) {
 	getObjectOutput, err := c.s3Client.GetObject(
 		ctx,
 		&s3.GetObjectInput{
 			Bucket: &c.cfg.Cloudflare.Bucket,
+			Key:    &objectKey,
 		})
 	if err != nil {
 		logger.Errorf("===== Get image from s3 failed: %+v", err.Error())
-		return "", err
+		return nil, err
 	}
-	// save image
-	outFile, err := os.Create("image.png")
-	if err != nil {
-		logger.Errorf("===== Create file failed: %+v", err.Error())
-		return "", err
-	}
-	defer outFile.Close()
-	_, err = io.Copy(outFile, getObjectOutput.Body)
-	if err != nil {
-		logger.Errorf("===== Copy file failed: %+v", err.Error())
-		return "", err
-	}
+	logger.Infof("===== Get image from s3 success: %+v", getObjectOutput)
 
-	return "", nil
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(getObjectOutput.Body)
+
+	return buf.Bytes(), nil
 }
