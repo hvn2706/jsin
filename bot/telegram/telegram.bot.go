@@ -52,6 +52,9 @@ func (b *Bot) Serve() error {
 				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Hmm, something went wrong"))
 				continue
 			}
+			if content.Message == "" {
+				continue
+			}
 
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, content.Message)
 			msg.ReplyToMessageID = update.Message.MessageID
