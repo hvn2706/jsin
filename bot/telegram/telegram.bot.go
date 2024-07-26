@@ -46,17 +46,17 @@ func (b *Bot) Serve() error {
 		if update.Message != nil { // If we got a message
 			logger.Infof("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
-			content, err := b.botHandler.HandleMessage(context.Background(), update.Message.Text)
+			generateContent, err := b.botHandler.HandleMessage(context.Background(), update.Message.Text)
 			if err != nil {
 				logger.Errorf("===== Handle message failed: %+v", err.Error())
 				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Hmm, something went wrong"))
 				continue
 			}
-			if content.Message == "" {
+			if generateContent.Message == "" {
 				continue
 			}
 
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, content.Message)
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, generateContent.Message)
 			msg.ReplyToMessageID = update.Message.MessageID
 
 			_, err = bot.Send(msg)
@@ -66,8 +66,8 @@ func (b *Bot) Serve() error {
 				continue
 			}
 
-			if content.Object != nil {
-				err = b.SendImage(update, *content.Object)
+			if generateContent.Object != nil {
+				err = b.SendImage(update, *generateContent.Object)
 				if err != nil {
 					logger.Errorf("===== Send image failed: %+v", err.Error())
 					_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Hmm, something went wrong"))
