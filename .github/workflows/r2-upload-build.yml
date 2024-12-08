@@ -13,16 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: ryand56/r2-upload-action@v1.3.4
     - name: build go
       run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main cmd/main.go
     - name: Upload file to R2
-      uses: magicwallet/r2-upload@main
+      uses: ryand56/r2-upload-action@latest
       with:
-        endpoint: ${{ secrets.R2_ENDPOINT }}
-        access_key_id: ${{ secrets.R2_ACCESS_KEY_ID }}
-        secret_access_key: ${{ secrets.R2_ACCESS_SECRET_KEY }}
-        bucket: ${{ secrets.R2_BUCKET }}
-        file: main
-        destination: '/public'
-        
+        r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+        r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
+        r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        r2-bucket: ${{ secrets.R2_BUCKET }}
+        source-dir: main
+        destination-dir: ./
