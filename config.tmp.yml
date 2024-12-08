@@ -30,7 +30,7 @@ external:
       token: token
       access_key_id: access_key_id
       secret_access_key: secret_access_key
-      jurisdiction_specific: something
+      jurisdiction_specific: r2_url
 
 telegram_bot:
   token: bot_token
