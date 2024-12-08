@@ -1,0 +1,28 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: ryand56/r2-upload-action@v1.3.4
+    - name: build go
+      run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main cmd/main.go
+    - name: Upload file to R2
+      uses: magicwallet/r2-upload@main
+      with:
+        endpoint: ${{ secrets.R2_ENDPOINT }}
+        access_key_id: ${{ secrets.R2_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.R2_ACCESS_SECRET_KEY }}
+        bucket: ${{ secrets.R2_BUCKET }}
+        file: main
+        destination: '/public'
+        
