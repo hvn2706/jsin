@@ -9,12 +9,15 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - name: build go
-      run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main cmd/main.go
+    - uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22.5'
+    - name: Build
+      run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o main ./cmd/main.go
     - name: Upload file to R2
       uses: ryand56/r2-upload-action@latest
       with:
