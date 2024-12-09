@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  jsin:
+    image: jsin
+    volumes:
+      - type: bind
+        source: ./config.yml
+        target: /app/config.yml
+    environment:
+      - STORAGE_TYPE=file

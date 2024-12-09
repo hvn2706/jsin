@@ -9,21 +9,19 @@ on:
 jobs:
 
   build:
+
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.22.5'
-    - name: Build
-      run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o main ./cmd/main.go
-    - name: Upload file to R2
-      uses: magicwallet/r2-upload@main
-      with:
-        endpoint: ${{ secrets.R2_ENDPOINT }}
-        access_key_id: ${{ secrets.R2_ACCESS_KEY_ID }}
-        secret_access_key: ${{ secrets.R2_ACCESS_SECRET_KEY }}
-        bucket: ${{ secrets.R2_BUCKET }}
-        file: ./main
-        destination: '/'
+      - uses: actions/checkout@v4
+      - name: Login dockerhub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag jsin
+
+      - name: Push Dockerhub
+        run:  docker push hvn/jsin:latest
