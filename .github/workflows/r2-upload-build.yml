@@ -32,11 +32,11 @@ jobs:
       - name: Workflow Dispatch
         uses: benc-uk/workflow-dispatch@v1
         env:
-            COMMIT_SHA: ${GITHUB_SHA::6}
+          COMMIT_SHA: ${GITHUB_SHA::6}
         with:
           repo: ${{ secrets.CONFIG_REPO }}
           token: ${{ secrets.REPO_ACCESS_PAT }}
           workflow: deploy.yaml
           ref: master
-          inputs: '{"commit_sha":"${{ COMMIT_SHA }}"}'
+          inputs: '{"commit_sha":"${{ env.COMMIT_SHA }}"}'
             
