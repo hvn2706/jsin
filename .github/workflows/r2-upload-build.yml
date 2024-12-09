@@ -37,6 +37,6 @@ jobs:
           repo: ${{ secrets.CONFIG_REPO }}
           token: ${{ secrets.REPO_ACCESS_PAT }}
           workflow: deploy
-          ref: master
+          ref: main
           inputs: '{"commit_sha":"${{ env.COMMIT_SHA }}"}'
             
