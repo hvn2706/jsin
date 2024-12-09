@@ -48,7 +48,7 @@ jobs:
         run:  docker push hvn21/jsin:${{ needs.setup.outputs.IMAGE_TAG }}
 
   dispatch:
-    needs: [ build ]
+    needs: [ build, setup ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
