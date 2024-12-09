@@ -32,7 +32,7 @@ jobs:
       - name: Workflow Dispatch
         uses: benc-uk/workflow-dispatch@v1
         env:
-            COMMIT_SHA: ${{ GITHUB_SHA }}::6
+            COMMIT_SHA: ${GITHUB_SHA::6}
         with:
           repo: ${{ secrets.CONFIG_REPO }}
           token: ${{ secrets.REPO_ACCESS_PAT }}
