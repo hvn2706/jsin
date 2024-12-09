@@ -30,6 +30,7 @@ jobs:
 #        run: echo "value=$(echo "$COMMIT_MESSAGE" | head -n 1)" >> $GITHUB_OUTPUT
 
   build:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
