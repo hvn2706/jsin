@@ -21,7 +21,7 @@ jobs:
         run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile -t jsin
+        run: docker build -t jsin .
 
       - name: Push Dockerhub
         run:  docker push hvn21/jsin:latest
