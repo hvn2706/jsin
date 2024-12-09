@@ -24,7 +24,7 @@ jobs:
         run: docker build -t jsin .
 
       - name: Tagging image
-        run: docker tag jsin:latest hvn21/jsin:latest
+        run: docker tag jsin:latest hvn21/jsin:${GITHUB_SHA::6}
 
       - name: Push Dockerhub
-        run:  docker push hvn21/jsin:latest
+        run:  docker push hvn21/jsin:${GITHUB_SHA::6}
