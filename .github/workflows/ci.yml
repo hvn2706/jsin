@@ -6,10 +6,29 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  GITHUB_COMMIT_SHA: ${ GITHUB_SHA::6 }
-
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      IMAGE_TAG: ${{ steps.tag.outputs.value }}
+#      REF: ${{ steps.ref.outputs.value }}
+#      COMMIT_MESSAGE: ${{ steps.commit_message.outputs.value }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Store git tag value to output
+        id: tag
+        run: echo "value=$(git describe --tags --always --abbrev=7)" >> $GITHUB_OUTPUT
+#      - name: Store git ref value to output
+#        id: ref
+#        run: echo "value=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+#      - name: Store the first line of commit message
+#        id: commit_message
+#        env:
+#          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+#        run: echo "value=$(echo "$COMMIT_MESSAGE" | head -n 1)" >> $GITHUB_OUTPUT
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -23,9 +42,9 @@ jobs:
       - name: Build the Docker image
         run: docker build -t jsin .
       - name: Tagging image
-        run: docker tag jsin:latest hvn21/jsin:${{env.GITHUB_COMMIT_SHA}}
+        run: docker tag jsin:latest hvn21/jsin:${{ needs.setup.outputs.IMAGE_TAG }}
       - name: Push Dockerhub
-        run:  docker push hvn21/jsin:${{env.GITHUB_COMMIT_SHA}}
+        run:  docker push hvn21/jsin:${{ needs.setup.outputs.IMAGE_TAG }}
 
   dispatch:
     needs: [ build ]
@@ -39,5 +58,5 @@ jobs:
           token: ${{ secrets.REPO_ACCESS_PAT }}
           workflow: deploy
           ref: main
-          inputs: '{"commit_sha":"${{env.GITHUB_COMMIT_SHA}}"}'
+          inputs: '{"commit_sha":"${{ needs.setup.outputs.IMAGE_TAG }}"}'
             
