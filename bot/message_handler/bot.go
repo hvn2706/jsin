@@ -33,6 +33,10 @@ func NewMessageHandler(s3client s3.IClient) IMessageHandler {
 // HandleMessage generates content based on the message received
 func (b *MessageHandler) HandleMessage(ctx context.Context, message string) (*MessageDTO, error) {
 	args := strings.Split(message, " ")
+	if args[0] != jsinCommand {
+		return nil, nil
+	}
+
 	var generatedContent *MessageDTO
 	var err error
 	handler := &cli.App{
