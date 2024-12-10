@@ -2,8 +2,6 @@ package database
 
 import (
 	"fmt"
-	"jsin/config"
-	"jsin/logger"
 	"log"
 	"os"
 	"sync"
@@ -12,6 +10,9 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
+
+	"jsin/config"
+	"jsin/logger"
 )
 
 var once sync.Once

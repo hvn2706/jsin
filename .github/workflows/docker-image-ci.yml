@@ -3,16 +3,12 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
       IMAGE_TAG: ${{ steps.tag.outputs.value }}
-#      REF: ${{ steps.ref.outputs.value }}
-#      COMMIT_MESSAGE: ${{ steps.commit_message.outputs.value }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,14 +16,6 @@ jobs:
       - name: Store git tag value to output
         id: tag
         run: echo "value=$(git describe --tags --always --abbrev=7)" >> $GITHUB_OUTPUT
-#      - name: Store git ref value to output
-#        id: ref
-#        run: echo "value=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
-#      - name: Store the first line of commit message
-#        id: commit_message
-#        env:
-#          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-#        run: echo "value=$(echo "$COMMIT_MESSAGE" | head -n 1)" >> $GITHUB_OUTPUT
 
   build:
     needs: setup

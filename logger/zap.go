@@ -36,7 +36,8 @@ func (l *zapLogger) Infof(format string, args ...interface{}) {
 	l.sugaredLogger.Infof(format, args...)
 }
 
-// InfoT ... stands for Info Terminate, it same as Infof() but we use it when logic flow is going to terminate after logging
+// InfoT ... stands for Info Terminate, it same as Infof()
+// but we use it when logic flow is going to terminate after logging
 func (l *zapLogger) InfoT(format string, args ...interface{}) {
 	l.sugaredLogger.Infof("-----> "+format+"\n", args...)
 }
@@ -57,7 +58,8 @@ func (l *zapLogger) Errorf(format string, args ...interface{}) {
 	l.sugaredLogger.Errorf(format, args...)
 }
 
-// ErrorT ... stands for Error Terminate, it same as Errorf() but we use it when logic flow is going to terminate after logging
+// ErrorT ... stands for Error Terminate, it same as Errorf()
+// but we use it when logic flow is going to terminate after logging
 func (l *zapLogger) ErrorT(format string, args ...interface{}) {
 	l.sugaredLogger.Errorf("-----> "+format+"\n", args...)
 }

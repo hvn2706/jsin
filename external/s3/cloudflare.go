@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"net/url"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	s3config "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	smithyendpoints "github.com/aws/smithy-go/endpoints"
-	"io"
+
 	"jsin/config"
 	"jsin/logger"
-	"net/url"
 )
 
 type IClient interface {
@@ -98,7 +100,11 @@ func (c *ClientImpl) GetImage(ctx context.Context, objectKey string) ([]byte, er
 	logger.Infof("===== Get image from s3 success: %+v", getObjectOutput)
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(getObjectOutput.Body)
+	_, err = buf.ReadFrom(getObjectOutput.Body)
+	if err != nil {
+		logger.Errorf("===== Read image from s3 failed: %+v", err.Error())
+		return nil, err
+	}
 
 	return buf.Bytes(), nil
 }

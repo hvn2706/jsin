@@ -92,7 +92,8 @@ func Infof(format string, args ...interface{}) {
 	log.Infof(format, args...)
 }
 
-// InfoT ... stands for Info Terminate, it same as Infof() but we use it when logic flow is going to terminate after logging
+// InfoT ... stands for Info Terminate, it same as Infof()
+// but we use it when logic flow is going to terminate after logging
 func InfoT(format string, args ...interface{}) {
 	log.Infof("-----> "+format+"\n", args...)
 }
@@ -113,7 +114,8 @@ func Errorf(format string, args ...interface{}) {
 	log.Errorf(format, args...)
 }
 
-// ErrorT ... stands for Error Terminate, it same as Errorf() but we use it when logic flow is going to terminate after logging
+// ErrorT ... stands for Error Terminate, it same as Errorf()
+// but we use it when logic flow is going to terminate after logging
 func ErrorT(format string, args ...interface{}) {
 	log.Errorf("-----> "+format+"\n", args...)
 }

@@ -3,13 +3,14 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"jsin/pkg/constants"
 	"os"
 	"strings"
 
 	"github.com/spf13/viper"
+
 	"jsin/logger"
 	"jsin/pkg/common"
+	"jsin/pkg/constants"
 )
 
 const (
@@ -104,7 +105,12 @@ func Load() {
 			fmt.Println("Error renaming file:", err)
 		} else {
 			fmt.Println("File renamed successfully.")
-			defer os.Rename(actualConfigFileName, tmpConfigFileName)
+			defer func() {
+				err := os.Rename(actualConfigFileName, tmpConfigFileName)
+				if err != nil {
+					logger.Errorf("Error renaming file: %v", err)
+				}
+			}()
 		}
 	}
 
@@ -146,5 +152,4 @@ func Load() {
 	if err != nil {
 		panic(err)
 	}
-	return
 }

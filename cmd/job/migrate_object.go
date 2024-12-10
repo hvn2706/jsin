@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
+
 	"jsin/config"
 	"jsin/database"
 	"jsin/external/s3"
 	"jsin/logger"
 	"jsin/model"
 	"jsin/pkg/constants"
-	"os"
 )
 
 type MigrateObjectHandler struct {
@@ -75,6 +76,10 @@ func (m *MigrateObjectHandler) Start(ctx context.Context) error {
 			Nsfw:        false,
 			ImageTypeID: normalImageTypeID,
 		}).Error
+		if err != nil {
+			logger.Errorf("===== Save object to db failed: %+v", err.Error())
+			return err
+		}
 
 		logger.Infof("===== Migrate object %d/%d done", i+1, len(listObjects))
 	}
