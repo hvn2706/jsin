@@ -91,7 +91,6 @@ func (b *Bot) SendImage(update tgbotapi.Update, object message_handler.ObjectDTO
 		Name:  object.ObjectKey,
 		Bytes: object.Object,
 	}
-	logger.Infof("Send image to: %d", update.Message.Chat.ID)
 	message, err := b.bot.Send(
 		tgbotapi.PhotoConfig{
 			BaseFile: tgbotapi.BaseFile{
