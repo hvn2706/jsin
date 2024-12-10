@@ -10,7 +10,7 @@ A telegram chatbot to query your own hosted image
 ### S3
 - Currently using [cloudflare r2](https://www.cloudflare.com/developer-platform/products/r2/)
 - Replace s3 config in config.yml
-- Use any s3 provider if you want, and add your own interface in ./external/s3
+- Use any s3 provider, or self hosted if you want, and add your own interface in ./external/s3
 
 ### Mysql
 - Init mysql and create folder ./objects inside repo, put your images inside that folder
