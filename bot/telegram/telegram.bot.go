@@ -46,7 +46,11 @@ func (b *Bot) Serve() error {
 
 	for update := range updates {
 		if update.Message != nil { // If we got a message
-			logger.Infof("[%s] %s", update.Message.From.UserName, update.Message.Text)
+			logger.Infof("[%s-%d] %s",
+				update.Message.From.UserName,
+				update.Message.Chat.ID,
+				update.Message.Text,
+			)
 
 			generateContent, err := b.botHandler.HandleMessage(context.Background(), update.Message.Text)
 			if err != nil {
@@ -87,7 +91,18 @@ func (b *Bot) SendImage(update tgbotapi.Update, object message_handler.ObjectDTO
 		Name:  object.ObjectKey,
 		Bytes: object.Object,
 	}
-	message, err := b.bot.Send(tgbotapi.NewPhoto(update.Message.Chat.ID, file))
+	logger.Infof("Send image to: %d", update.Message.Chat.ID)
+	message, err := b.bot.Send(
+		tgbotapi.PhotoConfig{
+			BaseFile: tgbotapi.BaseFile{
+				BaseChat: tgbotapi.BaseChat{
+					ChatID:           update.Message.Chat.ID,
+					ReplyToMessageID: 0,
+				},
+				File: file,
+			},
+		},
+	)
 	if err != nil {
 		logger.Errorf("===== Send image failed: %+v", err.Error())
 		return err
