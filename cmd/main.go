@@ -49,8 +49,13 @@ func main() {
 			{
 				Name:  "jsin-migration",
 				Usage: "migrate object to s3 and save url to db",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name: "special",
+					},
+				},
 				Action: func(ctx *cli.Context) error {
-					err = job.StartMigrationObjectJob(context.Background())
+					err = job.StartMigrationObjectJob(context.Background(), ctx.Bool("special"))
 					if err != nil {
 						return err
 					}

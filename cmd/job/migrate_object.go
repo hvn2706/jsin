@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/google/uuid"
+
 	"jsin/config"
 	"jsin/database"
 	"jsin/external/s3"
@@ -19,9 +21,9 @@ type MigrateObjectHandler struct {
 	s3Client s3.IClient
 }
 
-func StartMigrationObjectJob(ctx context.Context) error {
+func StartMigrationObjectJob(ctx context.Context, special bool) error {
 	handler := NewMigrateObjectHandler()
-	err := handler.Start(ctx)
+	err := handler.StartMigrateObject(ctx, special)
 	if err != nil {
 		return err
 	}
@@ -35,7 +37,7 @@ func NewMigrateObjectHandler() *MigrateObjectHandler {
 	}
 }
 
-func (m *MigrateObjectHandler) Start(ctx context.Context) error {
+func (m *MigrateObjectHandler) StartMigrateObject(ctx context.Context, special bool) error {
 	listObjects, err := os.ReadDir("../jsin/objects")
 	if err != nil {
 		logger.Errorf("===== Read dir failed: %+v", err.Error())
@@ -62,7 +64,8 @@ func (m *MigrateObjectHandler) Start(ctx context.Context) error {
 		}
 		// upload object
 		reader := bytes.NewReader(objectContent)
-		newImageName := fmt.Sprintf("image_%d.png", i)
+
+		newImageName := fmt.Sprintf("%s.png", uuid.New())
 		err = m.s3Client.UploadObject(ctx, reader, newImageName)
 		if err != nil {
 			logger.Errorf("===== Upload object failed: %+v", err.Error())
@@ -73,7 +76,7 @@ func (m *MigrateObjectHandler) Start(ctx context.Context) error {
 		err = m.gdb.DB().Table("image").Create(&model.Image{
 			FileName:    newImageName,
 			Source:      constants.R2Source,
-			Nsfw:        false,
+			Nsfw:        special,
 			ImageTypeID: normalImageTypeID,
 		}).Error
 		if err != nil {

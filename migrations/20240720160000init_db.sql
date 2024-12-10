@@ -17,3 +17,5 @@ create table image_type (
 
     primary key (id)
 );
+
+insert into image_type (name) values ('normal');
