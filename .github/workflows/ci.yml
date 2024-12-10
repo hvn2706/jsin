@@ -57,7 +57,7 @@ jobs:
         with:
           repo: ${{ secrets.CONFIG_REPO }}
           token: ${{ secrets.REPO_ACCESS_PAT }}
-          workflow: deploy
+          workflow: pull image tag
           ref: main
           inputs: '{"image_tag":"${{ needs.setup.outputs.IMAGE_TAG }}", "commit_url": "${{ github.event.head_commit.url }}"}'
             
