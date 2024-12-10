@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/google/uuid"
+
 	"jsin/config"
 	"jsin/database"
 	"jsin/external/s3"
@@ -19,9 +21,9 @@ type MigrateObjectHandler struct {
 	s3Client s3.IClient
 }
 
-func StartMigrationObjectJob(ctx context.Context) error {
+func StartMigrationObjectJob(ctx context.Context, special bool) error {
 	handler := NewMigrateObjectHandler()
-	err := handler.Start(ctx)
+	err := handler.StartMigrateObject(ctx, special)
 	if err != nil {
 		return err
 	}
@@ -35,7 +37,7 @@ func NewMigrateObjectHandler() *MigrateObjectHandler {
 	}
 }
 
-func (m *MigrateObjectHandler) Start(ctx context.Context) error {
+func (m *MigrateObjectHandler) StartMigrateObject(ctx context.Context, special bool) error {
 	listObjects, err := os.ReadDir("../jsin/objects")
 	if err != nil {
 		logger.Errorf("===== Read dir failed: %+v", err.Error())
@@ -52,36 +54,48 @@ func (m *MigrateObjectHandler) Start(ctx context.Context) error {
 		return err
 	}
 
-	for i, object := range listObjects {
-		logger.Infof("===== Migrate object: %s", object.Name())
+	for _, object := range listObjects {
 		// read object
 		objectContent, err := os.ReadFile("../jsin/objects/" + object.Name())
 		if err != nil {
-			logger.Errorf("===== Read object failed: %+v", err.Error())
+			logger.Errorf(
+				"===== Read object failed: %+v, object name: %s",
+				err.Error(),
+				object.Name(),
+			)
 			return err
 		}
 		// upload object
 		reader := bytes.NewReader(objectContent)
-		newImageName := fmt.Sprintf("image_%d.png", i)
+
+		newImageName := fmt.Sprintf("%s.png", uuid.New())
 		err = m.s3Client.UploadObject(ctx, reader, newImageName)
 		if err != nil {
-			logger.Errorf("===== Upload object failed: %+v", err.Error())
+			logger.Errorf(
+				"===== Upload object failed: %+v, object name: %s",
+				err.Error(),
+				newImageName,
+			)
 			return err
 		}
 
-		//save object url
+		// save object url
 		err = m.gdb.DB().Table("image").Create(&model.Image{
 			FileName:    newImageName,
 			Source:      constants.R2Source,
-			Nsfw:        false,
+			Nsfw:        special,
 			ImageTypeID: normalImageTypeID,
 		}).Error
 		if err != nil {
-			logger.Errorf("===== Save object to db failed: %+v", err.Error())
+			logger.Errorf(
+				"===== Save object to db failed: %+v, object name: %s",
+				err.Error(),
+				newImageName,
+			)
 			return err
 		}
-
-		logger.Infof("===== Migrate object %d/%d done", i+1, len(listObjects))
 	}
+
+	logger.Infof("===== Migrate %d objects done", len(listObjects))
 	return nil
 }
