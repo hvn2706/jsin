@@ -54,7 +54,7 @@ func (b *Bot) Serve() error {
 				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Hmm, something went wrong"))
 				continue
 			}
-			if generateContent.Message == "" {
+			if generateContent == nil || generateContent.Message == "" {
 				continue
 			}
 
