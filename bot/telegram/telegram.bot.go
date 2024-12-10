@@ -2,7 +2,9 @@ package telegram
 
 import (
 	"context"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+
 	"jsin/bot/message_handler"
 	"jsin/config"
 	"jsin/external/s3"

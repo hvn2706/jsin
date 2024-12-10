@@ -2,14 +2,16 @@ package main
 
 import (
 	"context"
+	"log"
+	"os"
+
 	"github.com/urfave/cli"
+
 	"jsin/bot/telegram"
 	"jsin/cmd/job"
 	"jsin/config"
 	"jsin/database"
 	"jsin/logger"
-	"log"
-	"os"
 )
 
 func main() {
