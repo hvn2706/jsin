@@ -21,20 +21,6 @@ const (
 // GlobalCfg global variable to access app configuration without passing it around
 var GlobalCfg Config
 
-// ===== Init structs =====
-
-// ServerListen for specifying host & port
-type ServerListen struct {
-	Host string `mapstructure:"host"`
-	Port uint16 `mapstructure:"port"`
-}
-
-// ServerConfig for configure HTTP & gRPC host & port
-type ServerConfig struct {
-	HTTP   ServerListen `mapstructure:"http"`
-	ApiKey string       `mapstructure:"api_key"`
-}
-
 type Database struct {
 	MySQLConfig     MySQLConfig `mapstructure:"mysql"`
 	MySQLTestConfig MySQLConfig `mapstructure:"mysql_test"`
@@ -55,7 +41,6 @@ type MySQLConfig struct {
 
 // Config for app configuration
 type Config struct {
-	Server          ServerConfig        `mapstructure:"server"`
 	Logger          logger.LoggerConfig `mapstructure:"logger"`
 	Database        Database            `mapstructure:"database"`
 	ExternalService External            `mapstructure:"external"`
@@ -85,17 +70,6 @@ type S3CloudflareConfig struct {
 	AccessKeyID          string `mapstructure:"access_key_id"`
 	SecretAccessKey      string `mapstructure:"secret_access_key"`
 	JurisdictionSpecific string `mapstructure:"jurisdiction_specific"`
-}
-
-// ===== Util func =====
-
-func (s ServerListen) String() string {
-	return fmt.Sprintf("%s:%d", s.Host, s.Port)
-}
-
-// ListenString for listen to 0.0.0.0
-func (s ServerListen) ListenString() string {
-	return fmt.Sprintf(":%d", s.Port)
 }
 
 func Load() {

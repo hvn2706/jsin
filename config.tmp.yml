@@ -1,9 +1,3 @@
-server:
-  http:
-    host: localhost
-    port: 10080
-  apiKey: 'key'
-
 logger:
   console: true
   format_json: false
