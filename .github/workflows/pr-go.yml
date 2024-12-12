@@ -7,7 +7,7 @@ on:
       - main
     paths-ignore:
     - "**/**.md"
-    - "**.md"
+    - "**/README.md"
 
 env:
   GO_VERSION: 1.22.5
