@@ -1,5 +1,5 @@
 # jsin
-A telegram chatbot to query your own hosted image
+A telegram chatbot to query **your own hosted image**
 
 ## Common flow
 - Receive command -> query db and get s3 url -> get object -> send object to telegram
@@ -21,3 +21,7 @@ A telegram chatbot to query your own hosted image
 - Create your telegram bot with [BotFather](https://core.telegram.org/bots/tutorial), remember to allow it to send message, group settings, ...
 - Replace your bot config in config.yml
 - Run: ```go run ./cmd/main.go jsin-telegram``` and your bot is up and running
+
+## Commands:
+- j.sin: random image without special content
+- j.sin nsfw: randome image with special content
