@@ -5,9 +5,6 @@ on:
   pull_request:
     branches:
       - main
-    paths-ignore:
-    - "**/**.md"
-    - "**/README.md"
 
 env:
   GO_VERSION: 1.22.5
