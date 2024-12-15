@@ -5,6 +5,7 @@ import (
 
 	"jsin/database"
 	"jsin/logger"
+	error2 "jsin/pkg/common/error"
 )
 
 type ImageStorage interface {
@@ -44,6 +45,10 @@ func (i *ImageStorageImpl) RandomImage(
 	if err != nil {
 		logger.Errorf("===== Get random image failed: %+v", err.Error())
 		return "", err
+	}
+
+	if randImageKey == "" {
+		return "", error2.ErrNotFound("no image found")
 	}
 
 	return randImageKey, nil

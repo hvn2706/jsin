@@ -85,6 +85,7 @@ func (b *MessageHandler) randomImageCmd(ctx context.Context, imgType string) (*M
 		logger.Errorf("===== Get image failed: %+v", err.Error())
 		return nil, err
 	}
+
 	return &MessageDTO{
 		Message: randImageKey,
 		Object: &ObjectDTO{

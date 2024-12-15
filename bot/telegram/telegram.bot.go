@@ -54,7 +54,7 @@ func (b *Bot) Serve() error {
 			generateContent, err := b.botHandler.HandleMessage(context.Background(), update.Message.Text)
 			if err != nil {
 				logger.Errorf("===== Handle message failed: %+v", err.Error())
-				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Hmm, something went wrong"))
+				_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, err.Error()))
 				continue
 			}
 			if generateContent == nil || generateContent.Message == "" {
