@@ -45,6 +45,7 @@ type Config struct {
 	Database        Database            `mapstructure:"database"`
 	ExternalService External            `mapstructure:"external"`
 	TelegramBot     TelegramBot         `mapstructure:"telegram_bot"`
+	HelpContent     string              `mapstructure:"help_command_content"`
 }
 
 type TelegramBot struct {

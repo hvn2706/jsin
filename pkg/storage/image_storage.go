@@ -5,10 +5,11 @@ import (
 
 	"jsin/database"
 	"jsin/logger"
+	error2 "jsin/pkg/common/error"
 )
 
 type ImageStorage interface {
-	RandomImage(ctx context.Context, nsfw bool) (string, error)
+	RandomImage(ctx context.Context, imgType string) (string, error)
 }
 
 type ImageStorageImpl struct {
@@ -26,19 +27,28 @@ func NewImageStorage() ImageStorage {
 
 func (i *ImageStorageImpl) RandomImage(
 	ctx context.Context,
-	nsfw bool,
+	imgType string,
 ) (string, error) {
 	var randImageKey string
 
-	err := i.gdb.DB().Table("image").
+	query := i.gdb.DB().Table("image").
 		Select("file_name").
-		Where("nsfw = ?", nsfw).
-		Order("rand()").
+		Joins("join image_type on image.image_type_id = image_type.id")
+
+	if imgType != "" {
+		query = query.Where("name = ?", imgType)
+	}
+
+	err := query.Order("rand()").
 		Limit(1).
 		Find(&randImageKey).Error
 	if err != nil {
 		logger.Errorf("===== Get random image failed: %+v", err.Error())
 		return "", err
+	}
+
+	if randImageKey == "" {
+		return "", error2.ErrNotFound("no image found")
 	}
 
 	return randImageKey, nil
