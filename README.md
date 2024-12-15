@@ -24,4 +24,3 @@ A telegram chatbot to query **your own hosted image**
 
 ## Commands:
 - j.sin: random image without special content
-- j.sin nsfw: random image with special content

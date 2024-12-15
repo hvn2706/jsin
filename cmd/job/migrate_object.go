@@ -21,9 +21,9 @@ type MigrateObjectHandler struct {
 	s3Client s3.IClient
 }
 
-func StartMigrationObjectJob(ctx context.Context, special bool) error {
+func StartMigrationObjectJob(ctx context.Context, imgType string) error {
 	handler := NewMigrateObjectHandler()
-	err := handler.StartMigrateObject(ctx, special)
+	err := handler.StartMigrateObject(ctx, imgType)
 	if err != nil {
 		return err
 	}
@@ -37,18 +37,18 @@ func NewMigrateObjectHandler() *MigrateObjectHandler {
 	}
 }
 
-func (m *MigrateObjectHandler) StartMigrateObject(ctx context.Context, special bool) error {
+func (m *MigrateObjectHandler) StartMigrateObject(ctx context.Context, imgType string) error {
 	listObjects, err := os.ReadDir("../jsin/objects")
 	if err != nil {
 		logger.Errorf("===== Read dir failed: %+v", err.Error())
 		return err
 	}
 	// get image type
-	var normalImageTypeID int32
+	var ImageTypeID int32
 	err = m.gdb.DB().Table("image_type").
 		Select("id").
-		Where("name = ?", constants.NormalImgType).
-		Find(&normalImageTypeID).Limit(1).Error
+		Where("name = ?", imgType).
+		Find(&ImageTypeID).Limit(1).Error
 	if err != nil {
 		logger.Errorf("===== Get image type failed: %+v", err.Error())
 		return err
@@ -83,8 +83,7 @@ func (m *MigrateObjectHandler) StartMigrateObject(ctx context.Context, special b
 		err = m.gdb.DB().Table("image").Create(&model.Image{
 			FileName:    newImageName,
 			Source:      constants.R2Source,
-			Nsfw:        special,
-			ImageTypeID: normalImageTypeID,
+			ImageTypeID: ImageTypeID,
 		}).Error
 		if err != nil {
 			logger.Errorf(

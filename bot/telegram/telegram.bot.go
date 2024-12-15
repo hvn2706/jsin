@@ -7,7 +7,6 @@ import (
 
 	"jsin/bot/message_handler"
 	"jsin/config"
-	"jsin/external/s3"
 	"jsin/logger"
 )
 
@@ -22,7 +21,7 @@ type Bot struct {
 }
 
 func NewTelegramBot(cfg config.Config) ITelegramBot {
-	botHandler := message_handler.NewMessageHandler(s3.NewClient(cfg.ExternalService.S3))
+	botHandler := message_handler.NewMessageHandler(cfg)
 	return &Bot{
 		cfg:        cfg.TelegramBot,
 		botHandler: botHandler,

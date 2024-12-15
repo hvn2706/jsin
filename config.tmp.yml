@@ -31,3 +31,7 @@ telegram_bot:
   debug: false
   offset: 0
   timeout: 60
+
+# you can explain your image type here
+help_command_content: |
+  j.sin to generate content
