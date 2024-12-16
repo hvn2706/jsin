@@ -24,3 +24,6 @@ A telegram chatbot to query **your own hosted image**
 
 ## Commands:
 - j.sin: random image without special content
+
+## Build
+- `go build ./cmd/main.go` or `docker build -t jsin .` then docker-compose (or just docker run it!)
