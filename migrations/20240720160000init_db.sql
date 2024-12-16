@@ -17,4 +17,13 @@ create table image_type (
     primary key (id)
 );
 
+create table cron_job(
+    id integer not null auto_increment,
+    chat_id varchar(128),
+    cron_job text,
+    type text,
+
+    primary key (id)
+);
+
 insert into image_type (name) values ('normal');
