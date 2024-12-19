@@ -41,11 +41,12 @@ type MySQLConfig struct {
 
 // Config for app configuration
 type Config struct {
-	Logger          logger.LoggerConfig `mapstructure:"logger"`
-	Database        Database            `mapstructure:"database"`
-	ExternalService External            `mapstructure:"external"`
-	TelegramBot     TelegramBot         `mapstructure:"telegram_bot"`
-	HelpContent     string              `mapstructure:"help_command_content"`
+	Logger              logger.LoggerConfig `mapstructure:"logger"`
+	Database            Database            `mapstructure:"database"`
+	ExternalService     External            `mapstructure:"external"`
+	TelegramBot         TelegramBot         `mapstructure:"telegram_bot"`
+	HelpContent         string              `mapstructure:"help_command_content"`
+	CreatCronJobContent string              `mapstructure:"create_cronjob_command_content"`
 }
 
 type TelegramBot struct {
