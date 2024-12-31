@@ -64,7 +64,7 @@ func (b *MessageHandler) HandleMessage(ctx context.Context, message string) (*Me
 				return err
 			}
 
-			if cronJobType == constants.DailyType && common.IsValidTimeFormat(args[len(args)-1]) {
+			if cronJobType == constants.DailyType && common.IsValidTimeFormat(args[len(args)-1]) == nil {
 				generatedContent, err = b.generateCronJob(ctx, cronJobType, common.ConvertToCronFormat(args[len(args)-1]))
 				return err
 			}
@@ -142,10 +142,14 @@ func (b *MessageHandler) generateHelpContent(ctx context.Context) (*MessageDTO, 
 	}, nil
 }
 
-func (b *MessageHandler) generateCronJob(ctx context.Context, cronJobType string, hour string) (*MessageDTO, error) {
+func (b *MessageHandler) generateCronJob(
+	ctx context.Context,
+	cronJobType string,
+	cronTime string,
+) (*MessageDTO, error) {
 	content := b.config.CreatCronJobContent
 
-	_, err := b.cronJobStorage.AddCronJob(ctx, hour, cronJobType)
+	_, err := b.cronJobStorage.AddCronJob(ctx, cronTime, cronJobType)
 	if err != nil {
 		return nil, err
 	}
