@@ -35,3 +35,6 @@ telegram_bot:
 # you can explain your image type here
 help_command_content: |
   j.sin to generate content
+
+create_cronjob_command_content: |
+  j.sin will send you random gift
