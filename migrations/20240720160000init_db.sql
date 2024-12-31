@@ -22,6 +22,8 @@ create table cron_job(
     chat_id varchar(128),
     cron_job text,
     type text,
+    created_at timestamp not null default current_timestamp,
+    updated_at timestamp not null default current_timestamp on update current_timestamp,
 
     primary key (id)
 );

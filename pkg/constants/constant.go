@@ -10,7 +10,8 @@ const (
 	Greeting      = "🌅 Have a great day!"
 	DayFormater   = "12-12-2024"
 	Sorry         = "We don't have the gift for you today"
-	HourFormater  = "15:00"
+	HourFormater  = "15:04"
 	DailyType     = "daily"
 	IntervalTime  = 10
+	ChatIDKey     = "chat_id"
 )

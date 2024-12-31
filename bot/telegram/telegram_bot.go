@@ -2,18 +2,17 @@ package telegram
 
 import (
 	"context"
-	"strconv"
-	"time"
+	"fmt"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/robfig/cron/v3"
 
+	"jsin/bot/cron_handler"
 	"jsin/bot/message_handler"
 	"jsin/config"
 	"jsin/logger"
 	"jsin/pkg/common"
 	"jsin/pkg/constants"
-	"jsin/pkg/storage"
 )
 
 type ITelegramBot interface {
@@ -21,16 +20,22 @@ type ITelegramBot interface {
 }
 
 type Bot struct {
-	cfg        config.TelegramBot
-	botHandler message_handler.IMessageHandler
-	bot        *tgbotapi.BotAPI
+	cfg           config.TelegramBot
+	botHandler    message_handler.IMessageHandler
+	cronHandler   cron_handler.CronHandler
+	bot           *tgbotapi.BotAPI
+	cronScheduler *cron.Cron
 }
 
 func NewTelegramBot(cfg config.Config) ITelegramBot {
 	botHandler := message_handler.NewMessageHandler(cfg)
+	cronHandler := cron_handler.NewCronHandler()
+	cronScheduler := cron.New(cron.WithLocation(common.LoadTimeZone()))
 	return &Bot{
-		cfg:        cfg.TelegramBot,
-		botHandler: botHandler,
+		cfg:           cfg.TelegramBot,
+		botHandler:    botHandler,
+		cronHandler:   cronHandler,
+		cronScheduler: cronScheduler,
 	}
 }
 
@@ -43,7 +48,15 @@ func (b *Bot) Serve() error {
 	bot.Debug = b.cfg.Debug
 	b.bot = bot
 	logger.Infof("Telegram bot start to serve, bot name: %s", bot.Self.UserName)
-	go b.Schedule(context.Background())
+
+	ctx := context.Background()
+	go func() {
+		err = b.SendImageCron(ctx)
+		if err != nil {
+			logger.Errorf("===== Send image cron failed: %+v", err.Error())
+			return
+		}
+	}()
 
 	u := tgbotapi.NewUpdate(b.cfg.Offset)
 	u.Timeout = b.cfg.Timeout
@@ -58,7 +71,11 @@ func (b *Bot) Serve() error {
 				update.Message.Text,
 			)
 
-			ctx := context.WithValue(context.Background(), "chatID", update.Message.Chat.ID)
+			ctx := context.WithValue(
+				context.Background(),
+				constants.ChatIDKey,
+				fmt.Sprintf("%d", update.Message.Chat.ID),
+			)
 			generateContent, err := b.botHandler.HandleMessage(ctx, update.Message.Text)
 			if err != nil {
 				logger.Errorf("===== Handle message failed: %+v", err.Error())
@@ -91,57 +108,4 @@ func (b *Bot) Serve() error {
 	}
 
 	return nil
-}
-
-func (b *Bot) Schedule(ctx context.Context) {
-	c := cron.New(cron.WithLocation(common.LoadTimeZone()))
-
-	for {
-		c.Stop()
-		c = cron.New(cron.WithLocation(common.LoadTimeZone()))
-
-		cronStorage := storage.NewCronJobStorage()
-		cronJobs, err := cronStorage.ListCronJobDaily(ctx)
-		if err != nil {
-			logger.Errorf("Failed to fetch daily cron jobs: %v", err)
-			continue
-		}
-
-		for _, job := range cronJobs {
-			chatID, err := strconv.ParseInt(job.ChatID, 10, 64)
-			if err != nil {
-				logger.Errorf("Invalid chat ID: %v", err)
-				continue
-			}
-
-			messageID, err := strconv.Atoi(job.ChatID)
-			if err != nil {
-				logger.Errorf("Invalid message ID: %v", err)
-				continue
-			}
-
-			_, err = c.AddFunc(job.CronJob, func() {
-				err := b.SendImageRandomDaily(messageID)
-				if err != nil {
-					return
-				}
-			})
-
-			if err != nil {
-				logger.Errorf("Error scheduling cron job for chat ID %d: %v", chatID, err)
-			}
-		}
-
-		c.Start()
-		logger.Info("Daily cron jobs scheduled successfully")
-
-		select {
-		case <-ctx.Done():
-			c.Stop()
-			logger.Info("Scheduler stopped")
-			return
-		case <-time.After(constants.IntervalTime * time.Second):
-			logger.Info("Refreshing cron jobs...")
-		}
-	}
 }

@@ -44,7 +44,7 @@ func (db *adapter) Open(cfg config.MySQLConfig) error {
 
 	DB, err := gorm.Open(
 		mysql.Open(
-			fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", cfg.User, cfg.Pass, cfg.Host, cfg.Port, cfg.Name),
+			fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", cfg.User, cfg.Pass, cfg.Host, cfg.Port, cfg.Name),
 		),
 		&gorm.Config{
 			Logger: newLogger,

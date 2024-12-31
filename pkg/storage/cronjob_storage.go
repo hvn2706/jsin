@@ -6,6 +6,7 @@ import (
 	"jsin/database"
 	"jsin/logger"
 	"jsin/model"
+	"jsin/pkg/constants"
 )
 
 type CronJob struct {
@@ -38,7 +39,7 @@ func (i *CronJobStorageImpl) AddCronJob(
 	cronJob string,
 	jobType string,
 ) (int64, error) {
-	chatID := ctx.Value("chatID").(string)
+	chatID := ctx.Value(constants.ChatIDKey).(string)
 	newJob := model.CronJob{
 		ChatID:  chatID,
 		CronJob: cronJob,
@@ -61,6 +62,14 @@ func (i *CronJobStorageImpl) ListCronJobDaily(ctx context.Context) ([]model.Cron
 
 	// Fetch all cron jobs with type = "daily"
 	result := i.gdb.DB().
+		Table(model.CronJob{}.TableName()).
+		Select(
+			"id",
+			"chat_id",
+			"cron_job",
+			"type",
+			"created_at",
+			"updated_at").
 		Where("type = ?", "daily").
 		Find(&cronJobs)
 

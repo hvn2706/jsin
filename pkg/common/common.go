@@ -27,9 +27,12 @@ func LoadTimeZone() *time.Location {
 	return location
 }
 
-func IsValidTimeFormat(input string) bool {
+func IsValidTimeFormat(input string) error {
 	_, err := time.Parse(constants.HourFormater, input)
-	return err == nil
+	if err != nil {
+		logger.Errorf("Invalid time format: %v", err)
+	}
+	return err
 }
 
 func ConvertToCronFormat(timeStr string) string {
