@@ -10,15 +10,14 @@ import (
 
 	"jsin/bot/message_handler"
 	"jsin/logger"
-	"jsin/pkg/common"
 	"jsin/pkg/constants"
 )
 
-func (b *Bot) SendImageCron(ctx context.Context) error {
+func (b *Bot) sendImageCron(ctx context.Context) error {
 	for {
 		b.cronScheduler.Stop()
 
-		b.cronScheduler = cron.New(cron.WithLocation(common.LoadTimeZone()))
+		b.cronScheduler = cron.New()
 		cronJobs, err := b.cronHandler.ListCronJobs(ctx)
 		if err != nil {
 			logger.Errorf("Failed to fetch cron jobs: %v", err)
@@ -32,19 +31,12 @@ func (b *Bot) SendImageCron(ctx context.Context) error {
 				continue
 			}
 
-			messageID, err := strconv.Atoi(job.ChatID)
-			if err != nil {
-				logger.Errorf("Invalid message ID: %v", err)
-				continue
-			}
-
 			_, err = b.cronScheduler.AddFunc(job.CronJob, func() {
-				err := b.SendImageRandomDaily(messageID)
+				err := b.sendImageByCron(chatID)
 				if err != nil {
 					return
 				}
 			})
-
 			if err != nil {
 				logger.Errorf("Error scheduling cron job for chat ID %d: %v", chatID, err)
 			}
@@ -62,7 +54,7 @@ func (b *Bot) SendImageCron(ctx context.Context) error {
 	}
 }
 
-func (b *Bot) SendImage(update tgbotapi.Update, object message_handler.ObjectDTO) error {
+func (b *Bot) sendImage(update tgbotapi.Update, object message_handler.ObjectDTO) error {
 	file := tgbotapi.FileBytes{
 		Name:  object.ObjectKey,
 		Bytes: object.Object,
@@ -87,7 +79,7 @@ func (b *Bot) SendImage(update tgbotapi.Update, object message_handler.ObjectDTO
 	return nil
 }
 
-func (b *Bot) SendImageByObject(chatID int64, object message_handler.ObjectDTO) error {
+func (b *Bot) sendImageByObject(chatID int64, object message_handler.ObjectDTO) error {
 	file := tgbotapi.FileBytes{
 		Name:  object.ObjectKey,
 		Bytes: object.Object,
@@ -114,19 +106,18 @@ func (b *Bot) SendImageByObject(chatID int64, object message_handler.ObjectDTO) 
 	return nil
 }
 
-func (b *Bot) SendImageRandomDaily(chatID int) error {
+func (b *Bot) sendImageByCron(chatID int64) error {
 	currentTime := time.Now().Format(constants.DayFormater)
 	generateContent, err := b.botHandler.RandomImageCron(context.Background())
-
 	if err != nil {
-		msg := tgbotapi.NewMessage(int64(chatID), constants.Sorry)
+		msg := tgbotapi.NewMessage(chatID, constants.Sorry)
 		_, err := b.bot.Send(msg)
 		if err != nil {
 			return err
 		}
 		return nil
 	}
-	photo := tgbotapi.NewPhoto(int64(chatID), tgbotapi.FileBytes{
+	photo := tgbotapi.NewPhoto(chatID, tgbotapi.FileBytes{
 		Name:  generateContent.Object.ObjectKey,
 		Bytes: generateContent.Object.Object,
 	})

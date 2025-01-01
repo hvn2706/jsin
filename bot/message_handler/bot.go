@@ -17,9 +17,6 @@ import (
 type IMessageHandler interface {
 	HandleMessage(ctx context.Context, message string) (*MessageDTO, error)
 	RandomImageCron(ctx context.Context) (*MessageDTO, error)
-
-	randomImageCmd(ctx context.Context, imgType string) (*MessageDTO, error)
-	generateHelpContent(ctx context.Context) (*MessageDTO, error)
 }
 
 type MessageHandler struct {

@@ -51,7 +51,7 @@ func (b *Bot) Serve() error {
 
 	ctx := context.Background()
 	go func() {
-		err = b.SendImageCron(ctx)
+		err = b.sendImageCron(ctx)
 		if err != nil {
 			logger.Errorf("===== Send image cron failed: %+v", err.Error())
 			return
@@ -97,7 +97,7 @@ func (b *Bot) Serve() error {
 			}
 
 			if generateContent.Object != nil {
-				err = b.SendImage(update, *generateContent.Object)
+				err = b.sendImage(update, *generateContent.Object)
 				if err != nil {
 					logger.Errorf("===== Send image failed: %+v", err.Error())
 					_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Hmm, something went wrong"))
