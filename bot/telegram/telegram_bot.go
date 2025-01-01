@@ -11,7 +11,6 @@ import (
 	"jsin/bot/message_handler"
 	"jsin/config"
 	"jsin/logger"
-	"jsin/pkg/common"
 	"jsin/pkg/constants"
 )
 
@@ -30,7 +29,7 @@ type Bot struct {
 func NewTelegramBot(cfg config.Config) ITelegramBot {
 	botHandler := message_handler.NewMessageHandler(cfg)
 	cronHandler := cron_handler.NewCronHandler()
-	cronScheduler := cron.New(cron.WithLocation(common.LoadTimeZone()))
+	cronScheduler := cron.New()
 	return &Bot{
 		cfg:           cfg.TelegramBot,
 		botHandler:    botHandler,
