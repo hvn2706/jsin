@@ -50,28 +50,36 @@ func (b *MessageHandler) HandleMessage(ctx context.Context, message string) (*Me
 			&cli.StringFlag{
 				Name: "type, t",
 			},
-			&cli.StringFlag{
-				Name: "cronjob, cj",
-			},
 		},
 		Action: func(ctxCLI *cli.Context) error {
-			cronJobType := ctxCLI.String("cronjob")
-			if cronJobType == "" {
-				generatedContent, err = b.randomImageCmd(ctx, ctxCLI.String("type"))
-				return err
-			}
-
-			if cronJobType == constants.DailyType && common.IsValidTimeFormat(args[len(args)-1]) == nil {
-				generatedContent, err = b.generateCronJob(ctx, cronJobType, common.ConvertToCronFormat(args[len(args)-1]))
-				return err
-			}
-			return nil
+			generatedContent, err = b.randomImageCmd(ctx, ctxCLI.String("type"))
+			return err
 		},
 		Commands: []cli.Command{
 			{
 				Name: "help",
 				Action: func(ctxCLI *cli.Context) error {
 					generatedContent, err = b.generateHelpContent(ctx)
+					return err
+				},
+			},
+			{
+				Name: "cron",
+				Action: func(ctxCLI *cli.Context) error {
+					cronType := args[len(args)-2]
+					cronTime := args[len(args)-1]
+					err := common.IsValidTimeFormat(cronTime)
+					if err != nil {
+						return err
+					}
+					if cronType == constants.DailyType {
+						generatedContent, err = b.generateCronJob(ctx, cronType, common.ConvertToCronFormat(cronTime))
+					} else {
+						// TODO: Add support for other cron types
+						generatedContent = &MessageDTO{
+							Message: "Currently only support daily",
+						}
+					}
 					return err
 				},
 			},

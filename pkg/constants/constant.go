@@ -12,6 +12,6 @@ const (
 	Sorry         = "We don't have the gift for you today"
 	HourFormater  = "15:04"
 	DailyType     = "daily"
-	IntervalTime  = 10
+	IntervalTime  = 1
 	ChatIDKey     = "chat_id"
 )

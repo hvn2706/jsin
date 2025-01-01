@@ -52,9 +52,7 @@ func (i *CronJobStorageImpl) AddCronJob(
 		logger.Errorf("===== Add cron job failed: %+v", result.Error)
 		return 0, result.Error
 	}
-
-	insertedID := result.RowsAffected
-	return insertedID, nil
+	return newJob.ID, nil
 }
 
 func (i *CronJobStorageImpl) ListCronJobDaily(ctx context.Context) ([]model.CronJob, error) {
@@ -76,11 +74,6 @@ func (i *CronJobStorageImpl) ListCronJobDaily(ctx context.Context) ([]model.Cron
 	if result.Error != nil {
 		logger.Errorf("===== List daily cron jobs failed: %+v", result.Error)
 		return nil, result.Error
-	}
-
-	for _, job := range cronJobs {
-		logger.Infof("Cron Job ID: %d, Chat ID: %s, Cron Job: %s, Type: %s",
-			job.ID, job.ChatID, job.CronJob, job.Type)
 	}
 
 	return cronJobs, nil
