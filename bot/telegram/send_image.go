@@ -79,33 +79,6 @@ func (b *Bot) sendImage(update tgbotapi.Update, object message_handler.ObjectDTO
 	return nil
 }
 
-func (b *Bot) sendImageByObject(chatID int64, object message_handler.ObjectDTO) error {
-	file := tgbotapi.FileBytes{
-		Name:  object.ObjectKey,
-		Bytes: object.Object,
-	}
-
-	message, err := b.bot.Send(
-		tgbotapi.PhotoConfig{
-			BaseFile: tgbotapi.BaseFile{
-				BaseChat: tgbotapi.BaseChat{
-					ChatID: chatID,
-				},
-				File: file,
-			},
-			Caption: constants.Greeting,
-		},
-	)
-
-	if err != nil {
-		logger.Errorf("===== Send image failed: %+v", err.Error())
-		return err
-	}
-
-	logger.Infof("Image sent, message id: %d", message.MessageID)
-	return nil
-}
-
 func (b *Bot) sendImageByCron(chatID int64) error {
 	currentTime := time.Now().Format(constants.DayFormater)
 	generateContent, err := b.botHandler.RandomImageCron(context.Background())
