@@ -12,6 +12,9 @@ A telegram chatbot to query **your own hosted image**
 - Replace s3 config in config.yml
 - Use any s3 provider, or self hosted if you want, and add your own interface in ./external/s3
 
+### 3rd parties
+- Custom 3rd-party APIs in config, the input is REST dynamic
+
 ### Mysql
 - Init mysql and create folder ./objects inside repo, put your images inside that folder
 - Replace mysql config in config.yml
@@ -20,10 +23,7 @@ A telegram chatbot to query **your own hosted image**
 ### Telegram bot
 - Create your telegram bot with [BotFather](https://core.telegram.org/bots/tutorial), remember to allow it to send message, group settings, ...
 - Replace your bot config in config.yml
-- Run: ```go run ./cmd/main.go jsin-telegram``` and your bot is up and running
-
-## Commands:
-- j.sin: random image without special content
+- Run: ```go run ./cmd/main.go jsin-telegram``` and your bot is up and running 
 
 ## Build
 - `go build ./cmd/main.go` or `docker build -t jsin .` then docker-compose (or just docker run it!)
