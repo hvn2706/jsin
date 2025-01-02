@@ -68,7 +68,12 @@ func (c *ClientImpl) getRandomImageURL(ctx context.Context) (string, error) {
 		logger.Errorf("Failed to send request: %v", err)
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			logger.Errorf("Failed to close response body: %v", err)
+		}
+	}(resp.Body)
 
 	// Read response body
 	body, err := io.ReadAll(resp.Body)
@@ -101,9 +106,15 @@ func (c *ClientImpl) getImageFromURL(ctx context.Context, url string) ([]byte, e
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		panic(err)
+		logger.Errorf("Failed to send request: %v", err)
+		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			logger.Errorf("Failed to close body: %v", err)
+		}
+	}(resp.Body)
 
 	// Read response body
 	body, err := io.ReadAll(resp.Body)
