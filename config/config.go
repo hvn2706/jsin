@@ -58,11 +58,25 @@ type TelegramBot struct {
 }
 
 type External struct {
-	S3 S3Config `mapstructure:"s3"`
+	S3               S3Config               `mapstructure:"s3"`
+	Custom3rdParties Custom3rdPartiesConfig `mapstructure:"custom_3rd_parties"`
 }
 
 type S3Config struct {
 	Cloudflare S3CloudflareConfig `mapstructure:"cloudflare"`
+}
+
+type Custom3rdPartiesConfig struct {
+	Parties []Party `mapstructure:"parties"`
+	Command string  `mapstructure:"command"`
+}
+
+type Party struct {
+	URL     string `mapstructure:"url"`
+	JSONKey string `mapstructure:"json_key"`
+	Method  string `mapstructure:"method"`
+	Header  string `mapstructure:"header"`
+	Token   string `mapstructure:"token"`
 }
 
 type S3CloudflareConfig struct {

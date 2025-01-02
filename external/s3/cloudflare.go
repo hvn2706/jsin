@@ -27,6 +27,8 @@ type ClientImpl struct {
 	cfg      config.S3Config
 }
 
+var _ IClient = &ClientImpl{}
+
 type resolverV2 struct {
 	uri       string
 	accountID string

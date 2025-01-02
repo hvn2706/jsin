@@ -43,3 +43,19 @@ func ConvertToCronFormat(timeStr string) string {
 
 	return fmt.Sprintf("%s %s * * *", minute, hour)
 }
+
+// FindKeyInMap to recursively search for a key and return its value
+func FindKeyInMap(data map[string]interface{}, key string) (interface{}, bool) {
+	for k, v := range data {
+		if k == key {
+			return v, true
+		}
+
+		if nestedMap, ok := v.(map[string]interface{}); ok {
+			if result, found := FindKeyInMap(nestedMap, key); found {
+				return result, true
+			}
+		}
+	}
+	return nil, false
+}

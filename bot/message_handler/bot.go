@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli"
 
 	"jsin/config"
+	"jsin/external/Custom3rdParties"
 	"jsin/external/s3"
 	"jsin/logger"
 	"jsin/pkg/common"
@@ -20,19 +21,22 @@ type IMessageHandler interface {
 }
 
 type MessageHandler struct {
-	config         config.Config
-	s3client       s3.IClient
-	imageStorage   storage.ImageStorage
-	cronJobStorage storage.CronJobStorage
+	config                 config.Config
+	s3client               s3.IClient
+	custom3rdPartiesClient Custom3rdParties.IClient
+	imageStorage           storage.ImageStorage
+	cronJobStorage         storage.CronJobStorage
 }
 
 func NewMessageHandler(cfg config.Config) IMessageHandler {
 	s3client := s3.NewClient(cfg.ExternalService.S3)
+	custom3rdPartiesClient := Custom3rdParties.NewClient(cfg.ExternalService.Custom3rdParties)
 	return &MessageHandler{
-		config:         cfg,
-		s3client:       s3client,
-		imageStorage:   storage.NewImageStorage(),
-		cronJobStorage: storage.NewCronJobStorage(),
+		config:                 cfg,
+		s3client:               s3client,
+		custom3rdPartiesClient: custom3rdPartiesClient,
+		imageStorage:           storage.NewImageStorage(),
+		cronJobStorage:         storage.NewCronJobStorage(),
 	}
 }
 
@@ -85,6 +89,13 @@ func (b *MessageHandler) HandleMessage(ctx context.Context, message string) (*Me
 					return err
 				},
 			},
+			{
+				Name: b.config.ExternalService.Custom3rdParties.Command,
+				Action: func(ctxCLI *cli.Context) error {
+					generatedContent, err = b.randomImageFrom3rdParties(ctx)
+					return err
+				},
+			},
 		},
 	}
 
@@ -119,7 +130,6 @@ func (b *MessageHandler) RandomImageCron(ctx context.Context) (*MessageDTO, erro
 }
 
 func (b *MessageHandler) randomImageCmd(ctx context.Context, imgType string) (*MessageDTO, error) {
-	logger.Infof("img type: %s", imgType)
 	randImageKey, err := b.imageStorage.RandomImage(ctx, imgType)
 	if err != nil {
 		logger.Errorf("===== Get random image failed: %+v", err.Error())
@@ -162,5 +172,19 @@ func (b *MessageHandler) generateCronJob(
 	}
 	return &MessageDTO{
 		Message: content,
+	}, nil
+}
+
+func (b *MessageHandler) randomImageFrom3rdParties(ctx context.Context) (*MessageDTO, error) {
+	img, err := b.custom3rdPartiesClient.GetRandomImageFrom3rdParties(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &MessageDTO{
+		Message: b.config.ExternalService.Custom3rdParties.Command,
+		Object: &ObjectDTO{
+			Object: img,
+		},
 	}, nil
 }

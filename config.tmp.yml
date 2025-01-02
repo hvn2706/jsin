@@ -25,6 +25,15 @@ external:
       access_key_id: access_key_id
       secret_access_key: secret_access_key
       jurisdiction_specific: r2_url
+#  Fetch images from custom 3rd parties
+  custom_3rd_parties:
+    parties:
+      - url: "url"
+        json_key: "map key to find img url"
+        method: GET
+        header: api-key
+        token: token
+    command: custom-command
 
 telegram_bot:
   token: bot_token
