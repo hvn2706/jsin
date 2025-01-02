@@ -72,14 +72,16 @@ func (b *MessageHandler) HandleMessage(ctx context.Context, message string) (*Me
 					if err != nil {
 						return err
 					}
-					if cronType == constants.DailyType {
-						generatedContent, err = b.generateCronJob(ctx, cronType, common.ConvertToCronFormat(cronTime))
-					} else {
+
+					if cronType != constants.DailyType {
 						// TODO: Add support for other cron types
 						generatedContent = &MessageDTO{
 							Message: "Currently only support daily",
 						}
+						return nil
 					}
+
+					generatedContent, err = b.generateCronJob(ctx, cronType, common.ConvertToCronFormat(cronTime))
 					return err
 				},
 			},
@@ -152,7 +154,7 @@ func (b *MessageHandler) generateCronJob(
 	cronJobType string,
 	cronTime string,
 ) (*MessageDTO, error) {
-	content := b.config.CreatCronJobContent
+	content := b.config.TelegramBot.CreatCronJobContent
 
 	_, err := b.cronJobStorage.AddCronJob(ctx, cronTime, cronJobType)
 	if err != nil {

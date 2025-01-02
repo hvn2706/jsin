@@ -41,19 +41,20 @@ type MySQLConfig struct {
 
 // Config for app configuration
 type Config struct {
-	Logger              logger.LoggerConfig `mapstructure:"logger"`
-	Database            Database            `mapstructure:"database"`
-	ExternalService     External            `mapstructure:"external"`
-	TelegramBot         TelegramBot         `mapstructure:"telegram_bot"`
-	HelpContent         string              `mapstructure:"help_command_content"`
-	CreatCronJobContent string              `mapstructure:"create_cronjob_command_content"`
+	Logger          logger.LoggerConfig `mapstructure:"logger"`
+	Database        Database            `mapstructure:"database"`
+	ExternalService External            `mapstructure:"external"`
+	TelegramBot     TelegramBot         `mapstructure:"telegram_bot"`
+	HelpContent     string              `mapstructure:"help_command_content"`
 }
 
 type TelegramBot struct {
-	Token   string `mapstructure:"token"`
-	Debug   bool   `mapstructure:"debug"`
-	Offset  int    `mapstructure:"offset"`
-	Timeout int    `mapstructure:"timeout"`
+	Token               string `mapstructure:"token"`
+	Debug               bool   `mapstructure:"debug"`
+	Offset              int    `mapstructure:"offset"`
+	Timeout             int    `mapstructure:"timeout"`
+	CreatCronJobContent string `mapstructure:"create_cronjob_command_content"`
+	CronJobImageCaption string `mapstructure:"cronjob_image_caption"`
 }
 
 type External struct {
