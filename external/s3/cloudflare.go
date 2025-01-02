@@ -97,7 +97,6 @@ func (c *ClientImpl) GetImage(ctx context.Context, objectKey string) ([]byte, er
 		logger.Errorf("===== Get image from s3 failed: %+v", err.Error())
 		return nil, err
 	}
-	logger.Infof("===== Get image from s3 success: %+v", getObjectOutput)
 
 	buf := new(bytes.Buffer)
 	_, err = buf.ReadFrom(getObjectOutput.Body)

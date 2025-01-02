@@ -121,6 +121,7 @@ func (b *Bot) sendImageByCron(chatID int64) error {
 		Name:  generateContent.Object.ObjectKey,
 		Bytes: generateContent.Object.Object,
 	})
+	photo.Caption = b.cfg.CronJobImageCaption
 
 	_, err = b.bot.Send(photo)
 	if err != nil {

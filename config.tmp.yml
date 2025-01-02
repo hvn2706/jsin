@@ -31,10 +31,11 @@ telegram_bot:
   debug: false
   offset: 0
   timeout: 60
+  create_cronjob_command_content: |
+    j.sin will send you random gift
+  cronjob_image_caption: |
+    A picture a day keeps the doctor away
 
 # you can explain your image type here
 help_command_content: |
   j.sin to generate content
-
-create_cronjob_command_content: |
-  j.sin will send you random gift
