@@ -64,12 +64,6 @@ func (b *Bot) Serve() error {
 
 	for update := range updates {
 		if update.Message != nil { // If we got a message
-			logger.Infof("[%s-%d] %s",
-				update.Message.From.UserName,
-				update.Message.Chat.ID,
-				update.Message.Text,
-			)
-
 			ctx := context.WithValue(
 				context.Background(),
 				constants.ChatIDKey,

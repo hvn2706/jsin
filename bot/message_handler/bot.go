@@ -46,7 +46,7 @@ func (b *MessageHandler) HandleMessage(ctx context.Context, message string) (*Me
 	if args[0] != jsinCommand {
 		return nil, nil
 	}
-
+	logger.Infof("command: %s", message)
 	var generatedContent *MessageDTO
 	var err error
 	handler := &cli.App{
