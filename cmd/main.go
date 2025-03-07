@@ -4,7 +4,10 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
+	"github.com/bucketeer-io/go-server-sdk/pkg/bucketeer"
+	"github.com/bucketeer-io/go-server-sdk/pkg/bucketeer/user"
 	"github.com/urfave/cli"
 
 	"jsin/bot/telegram"
@@ -28,6 +31,31 @@ func main() {
 	err = database.GetDBInstance().Open(config.GlobalCfg.Database.MySQLConfig)
 	if err != nil {
 		logger.Fatalf("===== Open db failed: %+v", err.Error())
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, err := bucketeer.NewSDK(
+		ctx,
+		bucketeer.WithAPIKey("test"),
+		bucketeer.WithHost("test"),
+		bucketeer.WithTag("test"),
+		bucketeer.WithEnableLocalEvaluation(true),          // <--- Enable the local evaluation
+		bucketeer.WithCachePollingInterval(10*time.Minute), // <--- Change the default interval if needed
+	)
+	if err != nil {
+		log.Fatalf("Failed initialize the new client: %v", err)
+	}
+
+	jsinUser := user.NewUser(
+		"END_USER_ID",
+		nil, // The jsinUser attributes are optional
+	)
+	showNewFeature := client.BoolVariation(ctx, jsinUser, "feature-go-server-e2e-string", false)
+	if showNewFeature {
+		// The Application code to show the new feature
+	} else {
+		// The code to run when the feature is off
 	}
 
 	// 4. Init server
